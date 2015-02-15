@@ -18,8 +18,8 @@ SearchCriteriaGroup( int x, int y, int w, int h, SearchCriteria &crit )
 	: Flx_Group(x, y, w, h )
 	, _searchCrit( crit )
 {
-    box( FLX_GRADIENT_BORDER_BOX );
-    color( fl_lighter( fl_lighter( FL_GREEN ) ) );
+    box( FL_FLAT_BOX );
+    color( fl_rgb_color( 220, 220, 220 ) );
 
     _pInpStartDir = new Flx_Input(139, 10, 401, 23, "Startverzeichnis: ");
     _pInpStartDir->value( _searchCrit.getSearchPath() );
@@ -30,12 +30,12 @@ SearchCriteriaGroup( int x, int y, int w, int h, SearchCriteria &crit )
     _pBtnOpenFileDlg->signalSelected.
     connect < SearchCriteriaGroup, &SearchCriteriaGroup::onOpenFileDlg >( this );
 
-    _pInpPattern = new Flx_Input(139, 36, 401, 23, "Suche Dateien: ");
-    _pInpPattern->value( "*" );
+    _pInpPattern = new Flx_Input(139, 36, 401, 23, "Dateiname-Pattern: ");
+    _pInpPattern->value( "*.cpp, *.h" );
     _pInpPattern->signalEnterPressed.
             connect < SearchCriteriaGroup, &SearchCriteriaGroup::onInputEnter >( this );
 
-    _pInpSearchContent = new Flx_Input(139, 62, 401, 23, "Suche nach Inhalt: ");
+    _pInpSearchContent = new Flx_Input(139, 62, 401, 23, "Volltextsuche nach: ");
     _pInpSearchContent->signalEnterPressed.
             connect < SearchCriteriaGroup, &SearchCriteriaGroup::onInputEnter >( this );
     

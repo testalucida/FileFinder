@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
     
 	mainWin.getStartStopSignal().connect < FileFinderController,
         &FileFinderController::onStartStopSearch > ( &ffc );
+    
+    
     mainWin.signalOpen.
             connect < ApplicationStarter, &ApplicationStarter::onOpenFile >
                     ( &appStarter );

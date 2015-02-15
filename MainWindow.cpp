@@ -24,17 +24,15 @@ MainWindow::MainWindow( SearchCriteria &searchCrit, HitList &hitlist )
     _pLowerGrp = new Flx_Group(0, 187, 575, 256);
         {
 			_pResultTbl = new Flx_Table( 0, 187, 575, 228 );
-			//_pResultTbl->box( FL_FLAT_BOX );
-			_pResultTbl->color( FLX_COLOR_GREEN );
-			_pResultTbl->col_header_color( FLX_COLOR_GREEN );
+			_pResultTbl->setNiceDefaults();
 			_pResultTbl->setTableData( hitlist );
 			_pResultTbl->col_width( 0, 400 );
 			_pResultTbl->col_width( 1, 175 );
             _pResultTbl->setSelectionMode( FLX_SELECTION_MULTIROW );
             Flx_ContextMenu &cellMenu = _pResultTbl->getCellContextMenu();
-//            cellMenu.addMenuItem( "Öffnen mit Editor", NULL, NULL, 0, MENU_IDENT_OPEN_WITH );
-//            cellMenu.addMenuItem( "Öffnen des enthaltenden Ordners", NULL, NULL, 
-//                    0, MENU_IDENT_OPEN_FOLDER, NULL, FL_MENU_DIVIDER );
+            cellMenu.addMenuItem( "Öffnen mit Editor", 0, MENU_IDENT_OPEN_WITH, 0 );
+            cellMenu.addMenuItem( "Öffnen des enthaltenden Ordners",  
+                    0, MENU_IDENT_OPEN_FOLDER, 1, NULL, NULL, FL_MENU_DIVIDER );
             _pResultTbl->signalContextMenuItemSelected.
                     connect < MainWindow, &MainWindow::onCellMenuItem >( this );
 
@@ -43,8 +41,8 @@ MainWindow::MainWindow( SearchCriteria &searchCrit, HitList &hitlist )
         {
             _pStatusMsg = new Flx_Output(0, 415, 575, 25, "Statusmessage");
             _pStatusMsg->textfont(3);
-            _pStatusMsg->box( FLX_GRADIENT_BORDER_DOWN_BOX );
-            _pStatusMsg->color( FLX_COLOR_GREEN );
+            _pStatusMsg->box( FL_THIN_DOWN_BOX );
+            _pStatusMsg->color( fl_rgb_color( 200, 200, 200 ) );
         } // Fl_Output* _pStatusMsg
     _pLowerGrp->end();
     Flx_Group::current()->resizable(_pLowerGrp);
