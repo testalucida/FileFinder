@@ -11,7 +11,7 @@
 #include <flx/Flx_Button.h>
 #include <flx/Flx_ReturnButton.h>
 
-#include <FL/Fl_Return_Button.H>
+//#include <FL/Fl_Return_Button.H>
 
 using namespace flx;
 
@@ -19,13 +19,14 @@ class SearchCriteria;
 
 class SearchCriteriaGroup : public Flx_Group  {
 public:
-    my::Signal < Flx_ReturnButton, SearchCriteria > signalStartStop;
+    my::Signal < Flx_ReturnButton, SearchCriteriaPtr > signalStart;
 public:
     SearchCriteriaGroup( int x, int y, int w, int h );
     ~SearchCriteriaGroup();
     void onOpenFileDlg( Flx_Button &, ActionParm & );
     void setModel( SearchCriteriaPtr pSearchCrit );
 private:
+    void onStart( Flx_ReturnButton &, ActionParm & );
     void modelToFields();
     void fieldsToModel();
 private:

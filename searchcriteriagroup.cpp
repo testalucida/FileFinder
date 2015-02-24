@@ -46,6 +46,7 @@ SearchCriteriaGroup( int x, int y, int w, int h )
     _pCheckMatchCase->labelsize(12);
 
     _pBtnStart = new Flx_ReturnButton(139, 154, 401, 23, "Suche starten");
+    _pBtnStart->signalSelected.connect<SearchCriteriaGroup, &SearchCriteriaGroup::onStart>( this );
  
     end();
 }
@@ -69,6 +70,11 @@ void SearchCriteriaGroup::onOpenFileDlg( Flx_Button &, ActionParm & ) {
 	}
 }
 
+void SearchCriteriaGroup::onStart( Flx_ReturnButton &btn, ActionParm & ) {
+    fieldsToModel();
+    signalStart.send( btn, _pSearchCrit );
+}
+
 void SearchCriteriaGroup::setModel( SearchCriteriaPtr pSearchCrit ) {
     _pSearchCrit = pSearchCrit;
     modelToFields();
@@ -84,10 +90,6 @@ void SearchCriteriaGroup::modelToFields() {
 }
 
 void SearchCriteriaGroup::fieldsToModel() {
-
-}
-
-SearchCriteriaGroup::~SearchCriteriaGroup() {
     _pSearchCrit->searchPath.clear();
     _pSearchCrit->searchPath.add( _pInpStartDir->value() );
     
@@ -100,4 +102,7 @@ SearchCriteriaGroup::~SearchCriteriaGroup() {
     _pSearchCrit->includeSubDirs = _pCheckIncludeSubDirs->value();
     _pSearchCrit->matchCase = _pCheckMatchCase->value();
     _pSearchCrit->matchWord = _pCheckWholeWords->value();
+}
+
+SearchCriteriaGroup::~SearchCriteriaGroup() {
 }

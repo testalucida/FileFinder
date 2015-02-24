@@ -19,6 +19,7 @@ MainWindow::MainWindow()
 : Flx_Window( 500, 100, 575, 440, "Dateien suchen und finden" )
 {
     _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187 );
+    _pSearchCritGrp->signalStart.connect<MainWindow, &MainWindow::onStart>( this );
 
     _pLowerGrp = new Flx_Group(0, 187, 575, 256);
         {
@@ -70,6 +71,13 @@ void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) 
     }
 }
 
+void MainWindow::onStart( Flx_ReturnButton &btn, SearchCriteriaPtr & pSearchCrit ) {
+    signalStart.send( btn, pSearchCrit );
+}
+
+void MainWindow::setStatus( const char *pMsg ) {
+    _pStatusMsg->value( pMsg );
+}
 
 MainWindow::~MainWindow()
 {
