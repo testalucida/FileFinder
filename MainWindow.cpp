@@ -1,7 +1,6 @@
 #include "MainWindow.h"
+#include "OpenParm.h"
 #include "searchcriteriagroup.h"
-#include "SearchCriteria.h"
-#include "HitList.h"
 
 #include <flx/Flx_Table.h>
 #include <flx/Flx_Output.h>
@@ -16,18 +15,15 @@ enum MenuIdents {
     MENU_IDENT_OPEN_FOLDER
 };
 
-MainWindow::MainWindow( SearchCriteria &searchCrit, HitList &hitlist )
+MainWindow::MainWindow()
 : Flx_Window( 500, 100, 575, 440, "Dateien suchen und finden" )
 {
-    _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187, searchCrit );
+    _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187 );
 
     _pLowerGrp = new Flx_Group(0, 187, 575, 256);
         {
 			_pResultTbl = new Flx_Table( 0, 187, 575, 228 );
 			_pResultTbl->setNiceDefaults();
-			_pResultTbl->setTableData( hitlist );
-			_pResultTbl->col_width( 0, 400 );
-			_pResultTbl->col_width( 1, 175 );
             _pResultTbl->setSelectionMode( FLX_SELECTION_MULTIROW );
             Flx_ContextMenu &cellMenu = _pResultTbl->getCellContextMenu();
             cellMenu.addMenuItem( "Öffnen mit Editor", 0, MENU_IDENT_OPEN_WITH, 0 );
@@ -45,20 +41,18 @@ MainWindow::MainWindow( SearchCriteria &searchCrit, HitList &hitlist )
             _pStatusMsg->color( fl_rgb_color( 200, 200, 200 ) );
         } // Fl_Output* _pStatusMsg
     _pLowerGrp->end();
-    Flx_Group::current()->resizable(_pLowerGrp);
+    
+    end();
+    resizable(_pLowerGrp);
 }
 
-void MainWindow::setStartDirectory( const char *pDir ) {
-    _pSearchCritGrp->setStartDirectory( pDir );
-}
 
-void MainWindow::onStart( Flx_ReturnButton &, ActionParm & ) {
-
-}
-
-my::Signal < Flx_ReturnButton, SearchCriteria > &MainWindow::
-getStartStopSignal() {
-    return _pSearchCritGrp->getStartStopSignal();
+void MainWindow::setModel( SearchCriteriaPtr pSearchCrit, HitListPtr pHitList ) {
+    _pSearchCritGrp->setModel( pSearchCrit );
+    _pHitList = pHitList;
+    _pResultTbl->setTableData( *pHitList );
+    _pResultTbl->col_width( 0, 400 );
+    _pResultTbl->col_width( 1, 175 );
 }
 
 void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) {
@@ -70,11 +64,12 @@ void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) 
     }
 
     if( mia.ident == MENU_IDENT_OPEN_WITH ) {
-        signalOpen.send( *this, parm );
+//        signalOpen.send( *this, parm );
     } else if( mia.ident == MENU_IDENT_OPEN_FOLDER ) {
-        signalOpenDir.send( *this, parm );
+//        signalOpenDir.send( *this, parm );
     }
 }
+
 
 MainWindow::~MainWindow()
 {

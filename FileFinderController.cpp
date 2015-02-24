@@ -37,6 +37,9 @@ FileFinderController::~FileFinderController(void) {
 
 void FileFinderController::onStartStopSearch( Flx_ReturnButton &btn, SearchCriteria & ) {
 	if( !_searchCrit.stopSearch ) {
+        _statusBar.value( "" );
+        _statusBar.redraw();
+        //Fl::wait();
 		_hitList.removeRows();
 		_ff.start();
 //		if( _onFinishedCallback ) {

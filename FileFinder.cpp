@@ -43,8 +43,8 @@ FileFinder::FileFinder(SearchCriteria &searchCrit)
 void FileFinder::prepareSearch() {
     _cntVisited = 0;
     _cntMatch = 0;
-    setFilePattern( _searchCrit.getFilePattern( ) );
-    const char *pContentPattern = _searchCrit.getSearchContent( );
+    setFilePattern( _searchCrit.searchPath.get() );
+    const char *pContentPattern = _searchCrit.searchContent.get();
     if( strlen( pContentPattern ) > 0 ) {
         setContentPattern( pContentPattern );
     }
@@ -60,14 +60,14 @@ void FileFinder::setContentPattern(const char *pPattern) {
 
 void FileFinder::start() {
     prepareSearch( );
-    DirectoryIterator itr( _searchCrit.getSearchPath( ), _searchCrit.includeSubDirs( ) );
+    DirectoryIterator itr( _searchCrit.searchPath.get(), _searchCrit.includeSubDirs );
     //remember this instance for an eventually call to stop():
     _pDirItr = &itr;
     _pDirItr->signalEntryFound.connect < FileFinder, &FileFinder::onHit > ( this );
     _pDirItr->signalTerminated.connect < FileFinder, &FileFinder::onSearchTerminated > ( this );
     _pDirItr->iterate( );
 
-    if( _searchCrit.sortEntries( ) ) {
+    if( _searchCrit.sortEntries ) {
         reportSortedEntries( );
     }
 
@@ -75,7 +75,7 @@ void FileFinder::start() {
 
 #ifndef WIN32
     regfree( &_filePattern );
-    const char *pContent = _searchCrit.getSearchContent( );
+    const char *pContent = _searchCrit.searchContent.get();
     if( pContent && strlen( pContent ) > 0 ) {
         regfree( &_contentPattern );
     }
@@ -90,7 +90,7 @@ void FileFinder::stop() {
 
 void FileFinder::onHit(DirectoryIterator &, EntryFoundEvent &entryFound) {
     EntryPtr pEntry = entryFound.entryPtr;
-    const char *searchContent = _searchCrit.getSearchContent( );
+    const char *searchContent = _searchCrit.searchContent.get();
     bool hasSearchContent = ( searchContent && strlen( searchContent ) > 0 );
     if( pEntry->isDirectory && hasSearchContent ) {
         //it's a directory; can't have content, so it's not
@@ -111,7 +111,7 @@ void FileFinder::onHit(DirectoryIterator &, EntryFoundEvent &entryFound) {
         }
         _cntMatch++;
         //if( _sortEntries ) {
-        if( _searchCrit.sortEntries( ) ) {
+        if( _searchCrit.sortEntries ) {
             rememberEntry( pEntry );
         } else {
             reportEntry( pEntry );
@@ -156,7 +156,7 @@ void FileFinder::reportEnd() {
 }
 
 bool FileFinder::matchesPattern(const string &text) {
-    const char *pat = _searchCrit.getFilePattern( );
+    const char *pat = _searchCrit.filePattern.get( );
     if( !pat || strlen( pat ) == 0 ) return true; //no pattern specified
 
 #ifdef WIN32
@@ -280,7 +280,7 @@ void FileFinder::compilePath(const char *pattern) {
 void FileFinder::compileContent(const char *pattern) {
     string dest;
 
-    if( _searchCrit.matchWord( ) ) {
+    if( _searchCrit.matchWord ) {
         dest.append( "\\b" );
     }
     char buf[2];
@@ -298,11 +298,11 @@ void FileFinder::compileContent(const char *pattern) {
         dest.append( buf );
     }
 
-    if( _searchCrit.matchWord( ) ) {
+    if( _searchCrit.matchWord ) {
         dest.append( "\\b" );
     }
 
-    if( !_searchCrit.matchCase() ) {
+    if( !_searchCrit.matchCase ) {
 #ifdef WIN32
         _pContentPattern->assign( dest, std::regex::icase );
 #else
