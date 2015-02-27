@@ -15,5 +15,7 @@ int main(int argc, char **argv) {
     
     mainWin.show();
     
+    //Fl::lock();
+    
     return Fl::run();
 }

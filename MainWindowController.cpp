@@ -15,6 +15,9 @@
 
 #include <my/FileHelper.h>
 
+#include <FL/fl_draw.H>
+#include <FL/Fl.H>
+
 using namespace my;
 
 MainWindowController::MainWindowController( MainWindow &win ) 
@@ -28,13 +31,16 @@ MainWindowController::MainWindowController( MainWindow &win )
     //set some defaults
     StringPtr curDir = FileHelper::instance().getCurrentDirectory();
     pSearchCrit->searchPath.add( curDir->c_str() );
-    pSearchCrit->filePattern.add( "*.cpp; *.h" );
+    pSearchCrit->filePattern.add( "*.cpp" );
+    //TEST
+    //pSearchCrit->searchContent.add( "EntryPtr pEntry( new Entry() );" );
+    //////
     pSearchCrit->includeSubDirs = true;
     pSearchCrit->matchCase = false;
     pSearchCrit->matchWord = false;
     
     HitListPtr pHitList( new HitList() );
-    
+    _pHitList = pHitList;
     _win.setModel( pSearchCrit, pHitList );
     _win.signalStart.connect<MainWindowController, &MainWindowController::onStartSearch>( this );
 }
@@ -42,6 +48,10 @@ MainWindowController::MainWindowController( MainWindow &win )
 void MainWindowController::onStartSearch( flx::Flx_ReturnButton &btn, 
                                           SearchCriteriaPtr &pSearchCrit ) 
 {
+    fl_cursor( FL_CURSOR_WAIT );
+    btn.deactivate();
+    Fl::wait( 0.5 );
+    _pHitList->removeRows();
     if( pSearchCrit->searchPath.isEmpty() || pSearchCrit->filePattern.isEmpty() ) {
         flx::Flx_Message::failed( "Weder Suchpfad noch FilePattern dürfen leer sein" );
     } else {
@@ -50,16 +60,20 @@ void MainWindowController::onStartSearch( flx::Flx_ReturnButton &btn,
         ff.signalTerminated.connect<MainWindowController, &MainWindowController::onSearchTerminated>( this );
         ff.start();
     }
+    fl_cursor( FL_CURSOR_DEFAULT );
+    btn.activate();
 }
 
 void MainWindowController::onMatch( FileFinder &ff, const EntryPtr &pEntryPtr ) {
-    
+    _pHitList->addEntry( pEntryPtr->directory.c_str(), 
+                         pEntryPtr->name.c_str(), 
+                         pEntryPtr->lastWrite );
 }
 
 void MainWindowController::onSearchTerminated( FileFinder &ff, const SearchStat &searchStat ) {
     CharBuffer msg;
     msg.add( "Suche beendet. " ).addInt( searchStat.cntVisited ).add( " Dateien betrachtet, " )
-       .addInt( searchStat.cntMatch ).add( " gefunden." );
+       .addInt( searchStat.cntMatch ).add( " Treffer." );
     _win.setStatus( msg.get() );
 }
 

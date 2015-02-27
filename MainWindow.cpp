@@ -16,7 +16,7 @@ enum MenuIdents {
 };
 
 MainWindow::MainWindow()
-: Flx_Window( 500, 100, 575, 440, "Dateien suchen und finden" )
+: Flx_Window( 500, 100, 575, 440, "Dateien und Inhalte finden" )
 {
     _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187 );
     _pSearchCritGrp->signalStart.connect<MainWindow, &MainWindow::onStart>( this );

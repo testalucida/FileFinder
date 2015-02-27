@@ -95,8 +95,11 @@ private:
 	void reportSortedEntries();
 	/** callback sort function for List::sort() */
 	static int listsort( const my::Entry* const &d1, const my::Entry* const &d2 );
-	/** compiles a given non-regex path pattern */
-	void compilePath( const char *pattern );
+	/** Compiles a given non-regex fle pattern 
+     *  Separate multiple patterns by ',' or ';'
+     *  Wildcards ('*') are allowed
+     */
+	void compilePattern( const char *pattern );
 	/** compiles a given non-regex content pattern */
 	void compileContent( const char *pattern );
 	/** destroys all heap allocated objects */

@@ -30,7 +30,7 @@ SearchCriteriaPtr FileFinderService::getSearchCriteria() {
     //set some defaults
     StringPtr curDir = FileHelper::instance().getCurrentDirectory();
     pSearchCrit->searchPath.add( curDir->c_str() );
-    pSearchCrit->filePattern.add( "*.cpp; *.h" );
+    pSearchCrit->filePattern.add( "*.cpp" );
     pSearchCrit->includeSubDirs = true;
     pSearchCrit->matchCase = false;
     pSearchCrit->matchWord = false;

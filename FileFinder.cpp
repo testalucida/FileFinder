@@ -26,7 +26,7 @@
 using namespace std;
 using namespace my;
 
-FileFinder::FileFinder(SearchCriteria &searchCrit)
+FileFinder::FileFinder( SearchCriteria &searchCrit )
 : _searchCrit(searchCrit)
 //, _callCnt(0)
 , _cntVisited(0)
@@ -43,7 +43,7 @@ FileFinder::FileFinder(SearchCriteria &searchCrit)
 void FileFinder::prepareSearch() {
     _cntVisited = 0;
     _cntMatch = 0;
-    setFilePattern( _searchCrit.searchPath.get() );
+    setFilePattern( _searchCrit.filePattern.get() );
     const char *pContentPattern = _searchCrit.searchContent.get();
     if( strlen( pContentPattern ) > 0 ) {
         setContentPattern( pContentPattern );
@@ -51,7 +51,7 @@ void FileFinder::prepareSearch() {
 }
 
 void FileFinder::setFilePattern(const char *pPattern) {
-    compilePath( pPattern );
+    compilePattern( pPattern );
 }
 
 void FileFinder::setContentPattern(const char *pPattern) {
@@ -170,9 +170,11 @@ bool FileFinder::matchesPattern(const string &text) {
     regmatch_t matches[1]; //A list of the matches in the string (a list of 1)
     //Compare the string to the expression
     //regexec() returns 0 on match, otherwise REG_NOMATCH
+//    fprintf( stderr, "matchesPattern: checking %s\n", text.c_str() );
+ 
     if( regexec( &_filePattern, text.c_str( ), 1, matches, 0 ) == 0 ) {
-        //            printf( "\"%s\" matches characters %d - %d\n",
-        //                    sz, matches[0].rm_so, matches[0].rm_eo );
+//        fprintf( stderr, "\"%s\" matches characters %d - %d\n",
+//                         text.c_str(), matches[0].rm_so, matches[0].rm_eo );
         return true;
     }
 #endif
@@ -244,35 +246,50 @@ int FileFinder::listsort(const Entry * const & e1, const Entry * const & e2) {
     return strcmp( e1->name.c_str( ), e2->name.c_str( ) );
 }
 
-void FileFinder::compilePath(const char *pattern) {
+void FileFinder::compilePattern(const char *pattern) {
+    //Beispiele:
+    //Eingabe m*n.cpp wird zu  ^m\w+n\.cpp
+    //Eingabe von *.cpp; *.h wird zu  \w+\.cpp$|\w+\.h$
+    //Eingabe von * wird zu \w+
+    //Eingabe von *.* wird zu \w+\.\w+
+    
     string dest;
-    char last = pattern[strlen( pattern ) - 1];
-    bool endsWithWildCard = ( last == '*' );
-
+    char buf[2];
+    buf[1] = '\0';
+    
     if( *pattern != '*' ) {
-        dest.append( "^" );
+        dest.append( "^"); //Pattern muss am Anfang des zu durchsuch. Textes gefunden werden;
+                           //dient der Performance
     }
-    for(; *pattern; ) {
-        if( *pattern == '.' ) {
+    
+    for( ; *pattern; pattern++ ) {
+        if( *pattern == '*' ) {
+            dest.append( "\\w+" );
+        } else if( *pattern == '.' ) {
             dest.append( "\\." );
-        } else if( *pattern == '*' ) {
-            dest.append( "\\w*" );
+        } else if( *pattern == ',' || *pattern == ';' ) {
+            //es folgt ein weiteres Pattern
+            if( *(pattern-1) != '*' ) {
+                dest.append( "$" );
+            }
+            dest.append( "|" );
+            while( *(pattern+1) == ' ' ) { pattern++; }
         } else {
-            char buf[2];
             buf[0] = *pattern;
-            buf[1] = '\0';
             dest.append( buf );
         }
-        pattern++;
     }
-    if( !endsWithWildCard ) {
+    
+    if( *(pattern-1) != '*' ) {
         dest.append( "$" );
     }
+    
+    fprintf( stderr, "RegEx: %s\n", dest.c_str() );
 
 #ifdef WIN32
     _filePattern.assign( dest, std::regex::icase );
 #else
-    int rc = regcomp( &_filePattern, dest.c_str( ), REG_ICASE );
+    int rc = regcomp( &_filePattern, dest.c_str( ), REG_EXTENDED | REG_ICASE );
     if( rc != 0 ) throw ( "could not compile file pattern." );
 #endif
 }
