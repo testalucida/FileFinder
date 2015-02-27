@@ -264,7 +264,7 @@ void FileFinder::compilePattern(const char *pattern) {
     
     for( ; *pattern; pattern++ ) {
         if( *pattern == '*' ) {
-            dest.append( "\\w+" );
+            dest.append( ".+" );
         } else if( *pattern == '.' ) {
             dest.append( "\\." );
         } else if( *pattern == ',' || *pattern == ';' ) {
@@ -284,12 +284,13 @@ void FileFinder::compilePattern(const char *pattern) {
         dest.append( "$" );
     }
     
-    fprintf( stderr, "RegEx: %s\n", dest.c_str() );
+    //fprintf( stderr, "RegEx: %s\n", dest.c_str() );
 
 #ifdef WIN32
     _filePattern.assign( dest, std::regex::icase );
 #else
-    int rc = regcomp( &_filePattern, dest.c_str( ), REG_EXTENDED | REG_ICASE );
+    int rc = _searchCrit.matchCase ? regcomp( &_filePattern, dest.c_str( ), REG_EXTENDED ) : 
+                                     regcomp( &_filePattern, dest.c_str( ), REG_EXTENDED | REG_ICASE );
     if( rc != 0 ) throw ( "could not compile file pattern." );
 #endif
 }
@@ -323,14 +324,14 @@ void FileFinder::compileContent(const char *pattern) {
 #ifdef WIN32
         _pContentPattern->assign( dest, std::regex::icase );
 #else
-        int rc = regcomp( &_contentPattern, dest.c_str(), REG_ICASE );
+        int rc = regcomp( &_contentPattern, dest.c_str(), REG_EXTENDED | REG_ICASE );                                         
         if( rc != 0 ) throw ( "could not compile content pattern." );
 #endif
     } else {
 #ifdef WIN32
         _pContentPattern->assign( dest );
 #else
-        int rc = regcomp( &_contentPattern, dest.c_str(), 0 );
+        int rc = regcomp( &_contentPattern, dest.c_str(), REG_EXTENDED );
         if( rc != 0 ) throw ( "could not compile content pattern." );
 #endif
     }

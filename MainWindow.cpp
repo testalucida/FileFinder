@@ -65,9 +65,9 @@ void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) 
     }
 
     if( mia.ident == MENU_IDENT_OPEN_WITH ) {
-//        signalOpen.send( *this, parm );
+        signalOpen.send( *this, parm );
     } else if( mia.ident == MENU_IDENT_OPEN_FOLDER ) {
-//        signalOpenDir.send( *this, parm );
+        signalOpenDir.send( *this, parm );
     }
 }
 
@@ -78,6 +78,7 @@ void MainWindow::onStart( Flx_ReturnButton &btn, SearchCriteriaPtr & pSearchCrit
 void MainWindow::setStatus( const char *pMsg ) {
     _pStatusMsg->value( pMsg );
 }
+
 
 MainWindow::~MainWindow()
 {

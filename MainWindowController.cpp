@@ -9,6 +9,7 @@
 #include "MainWindow.h"
 #include "FileFinderService.h"
 #include "FileFinder.h"
+#include "ApplicationStarter.h"
 
 #include <flx/Flx_ReturnButton.h>
 #include <flx/Flx_Message.h>
@@ -31,10 +32,7 @@ MainWindowController::MainWindowController( MainWindow &win )
     //set some defaults
     StringPtr curDir = FileHelper::instance().getCurrentDirectory();
     pSearchCrit->searchPath.add( curDir->c_str() );
-    pSearchCrit->filePattern.add( "*.cpp" );
-    //TEST
-    //pSearchCrit->searchContent.add( "EntryPtr pEntry( new Entry() );" );
-    //////
+    pSearchCrit->filePattern.add( "*.cpp, *.h" );
     pSearchCrit->includeSubDirs = true;
     pSearchCrit->matchCase = false;
     pSearchCrit->matchWord = false;
@@ -43,6 +41,8 @@ MainWindowController::MainWindowController( MainWindow &win )
     _pHitList = pHitList;
     _win.setModel( pSearchCrit, pHitList );
     _win.signalStart.connect<MainWindowController, &MainWindowController::onStartSearch>( this );
+    _win.signalOpen.connect<ApplicationStarter, &ApplicationStarter::onOpenFile>( &_appStarter );
+    _win.signalOpenDir.connect<ApplicationStarter, &ApplicationStarter::onOpenDir>( &_appStarter );
 }
 
 void MainWindowController::onStartSearch( flx::Flx_ReturnButton &btn, 
@@ -76,6 +76,14 @@ void MainWindowController::onSearchTerminated( FileFinder &ff, const SearchStat 
        .addInt( searchStat.cntMatch ).add( " Treffer." );
     _win.setStatus( msg.get() );
 }
+
+//void MainWindowController::onOpenFile( MainWindow &, OpenParm &parm ) {
+//    ApplicationStarter starter;
+//}
+//
+//void MainWindowController::onOpenDir( MainWindow &, OpenParm &parm ) {
+//    
+//}
 
 MainWindowController::~MainWindowController( ) {
 }

@@ -11,9 +11,11 @@
 #include "SearchCriteria.h"
 #include "HitList.h"
 #include "FileFinder.h"
+#include "ApplicationStarter.h"
 
 class MainWindow;
 class FileFinderService;
+struct OpenParm;
 
 namespace flx {
     class Flx_ReturnButton;
@@ -26,10 +28,13 @@ public:
     void onStartSearch( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
     void onMatch( FileFinder &, const EntryPtr & );
     void onSearchTerminated( FileFinder &, const SearchStat & );
+//    void onOpenFile( MainWindow &, OpenParm & );
+//    void onOpenDir( MainWindow &, OpenParm & );
 private:
     MainWindow &_win;
 //    FileFinderService &_ffService;
     HitListPtr _pHitList;
+    ApplicationStarter _appStarter;
 };
 
 #endif	/* MAINWINDOWVIEWMODEL_H */

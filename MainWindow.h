@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-//#include "OpenParm.h"
+#include "OpenParm.h"
 
 //#include <my/Signal.hpp>
 
@@ -25,6 +25,9 @@ class SearchCriteriaGroup;
 
 
 class MainWindow : public flx::Flx_Window {
+public:
+    my::Signal<MainWindow, OpenParm> signalOpen;
+    my::Signal<MainWindow, OpenParm> signalOpenDir;
 public:
     my::Signal < flx::Flx_ReturnButton, SearchCriteriaPtr > signalStart;
 public:

@@ -95,7 +95,7 @@ private:
 	void reportSortedEntries();
 	/** callback sort function for List::sort() */
 	static int listsort( const my::Entry* const &d1, const my::Entry* const &d2 );
-	/** Compiles a given non-regex fle pattern 
+	/** Compiles a given non-regex file pattern e.g. m*n.cpp; *.h 
      *  Separate multiple patterns by ',' or ';'
      *  Wildcards ('*') are allowed
      */
