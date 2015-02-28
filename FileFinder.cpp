@@ -30,17 +30,10 @@ using namespace my;
 
 FileFinder::FileFinder( SearchCriteria &searchCrit )
 : _searchCrit(searchCrit)
-//, _callCnt(0)
 , _cntVisited(0)
 , _cntMatch(0)
-//, _stop(false)
 , _pDirItr(NULL) {
 }
-
-//void FileFinder::setSearchCriteria( SearchCriteria &input ) {
-//	_searchCrit = input;
-//	prepareSearch();
-//}
 
 void FileFinder::prepareSearch() {
     _cntVisited = 0;
@@ -103,10 +96,7 @@ void FileFinder::onHit(DirectoryIterator &dirItr, EntryFoundEvent &entryFound) {
             return;
         }
         _cntVisited++;
-        //	if( _onProgressCallback ) {
-        //		reportProgress( pEntry->directory.c_str(), pEntry->name.c_str() );
-        //	}
-
+   
         if( ( pEntry->isDirectory && matchesPattern( pEntry->directory ) ) ||
                 ( /*!pEntry->isDirectory &&*/ matchesPattern( pEntry->name ) ) ) {
             if( hasSearchContent ) {
@@ -115,7 +105,7 @@ void FileFinder::onHit(DirectoryIterator &dirItr, EntryFoundEvent &entryFound) {
                 }
             }
             _cntMatch++;
-            //if( _sortEntries ) {
+           
             if( _searchCrit.sortEntries ) {
                 rememberEntry( pEntry );
             } else {
@@ -145,8 +135,6 @@ void FileFinder::reportProgress(const char *dir, const char *filename) {
     strcpy( _progressMsg, dir );
     strcat( _progressMsg, "/" );
     strcat( _progressMsg, filename );
-    //_onProgressCallback( _progressMsg );
-    //}
 }
 
 void FileFinder::reportEnd() {
@@ -156,9 +144,7 @@ void FileFinder::reportEnd() {
     Convert::toString( _cntMatch, s );
     s.append( " Treffer." );
     strcpy( _progressMsg, s.c_str( ) );
-    //    if ( _onProgressCallback ) {
-    //        _onProgressCallback( _progressMsg );
-    //    }
+    
     _cntVisited = 0;
     _cntMatch = 0;
 }
@@ -178,11 +164,7 @@ bool FileFinder::matchesPattern(const string &text) {
     regmatch_t matches[1]; //A list of the matches in the string (a list of 1)
     //Compare the string to the expression
     //regexec() returns 0 on match, otherwise REG_NOMATCH
-//    fprintf( stderr, "matchesPattern: checking %s\n", text.c_str() );
- 
     if( regexec( &_filePattern, text.c_str( ), 1, matches, 0 ) == 0 ) {
-//        fprintf( stderr, "\"%s\" matches characters %d - %d\n",
-//                         text.c_str(), matches[0].rm_so, matches[0].rm_eo );
         return true;
     }
 #endif
@@ -215,9 +197,7 @@ bool FileFinder::contentMatchesPattern(const EntryPtr pEntry) {
         regmatch_t matches[1]; //A list of the matches in the string (a list of 1)
         //Compare the string to the expression
         //regexec() returns 0 on match, otherwise REG_NOMATCH
-        if( regexec( &_contentPattern, text.c_str( ), 1, matches, 0 ) == 0 ) {
-            //            printf( "\"%s\" matches characters %d - %d\n",
-            //                    sz, matches[0].rm_so, matches[0].rm_eo );
+        if( regexec( &_contentPattern, text.c_str( ), 1, matches, 0 ) == 0 ) {           
             return true;
         }
 #endif
@@ -265,7 +245,7 @@ int FileFinder::listsort(const Entry * const & e1, const Entry * const & e2) {
 
 void FileFinder::compilePattern(const char *pattern) {
     //Beispiele:
-    //Eingabe m*n.cpp wird zu  ^m\w+n\.cpp
+    //Eingabe m*n.cpp wird zu  ^m\w+n\.cpp$
     //Eingabe von *.cpp; *.h wird zu  \w+\.cpp$|\w+\.h$
     //Eingabe von * wird zu \w+
     //Eingabe von *.* wird zu \w+\.\w+
@@ -300,8 +280,6 @@ void FileFinder::compilePattern(const char *pattern) {
     if( *(pattern-1) != '*' ) {
         dest.append( "$" );
     }
-    
-    //fprintf( stderr, "RegEx: %s\n", dest.c_str() );
 
 #ifdef WIN32
     _filePattern.assign( dest, std::regex::icase );
