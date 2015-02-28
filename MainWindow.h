@@ -18,6 +18,7 @@ namespace flx {
     class Flx_Table;
     class Flx_ContextMenu;
     class Flx_ReturnButton;
+    class Flx_Button;
     struct MenuItemAction;
 }
 
@@ -26,16 +27,18 @@ class SearchCriteriaGroup;
 
 class MainWindow : public flx::Flx_Window {
 public:
+    my::Signal < flx::Flx_ReturnButton, SearchCriteriaPtr > signalStartStop;
+//    my::Signal < flx::Flx_Button, SearchCriteriaPtr > signalCancel;
     my::Signal<MainWindow, OpenParm> signalOpen;
     my::Signal<MainWindow, OpenParm> signalOpenDir;
-public:
-    my::Signal < flx::Flx_ReturnButton, SearchCriteriaPtr > signalStart;
+    
 public:
     MainWindow( );
     virtual ~MainWindow();
     void setModel( SearchCriteriaPtr pSearchCrit, HitListPtr pHitList );
     void onCellMenuItem( flx::Flx_ContextMenu &, flx::MenuItemAction & );
-    void onStart( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
+    void onStartStop( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
+//    void onCancel( flx::Flx_Button &, SearchCriteriaPtr & );
     void setStatus( const char *pMsg );
 private:
     SearchCriteriaGroup *_pSearchCritGrp;

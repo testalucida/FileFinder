@@ -40,18 +40,32 @@ MainWindowController::MainWindowController( MainWindow &win )
     HitListPtr pHitList( new HitList() );
     _pHitList = pHitList;
     _win.setModel( pSearchCrit, pHitList );
-    _win.signalStart.connect<MainWindowController, &MainWindowController::onStartSearch>( this );
+    _win.signalStartStop.connect<MainWindowController, &MainWindowController::onStartStopSearch>( this );
     _win.signalOpen.connect<ApplicationStarter, &ApplicationStarter::onOpenFile>( &_appStarter );
     _win.signalOpenDir.connect<ApplicationStarter, &ApplicationStarter::onOpenDir>( &_appStarter );
 }
 
-void MainWindowController::onStartSearch( flx::Flx_ReturnButton &btn, 
+void MainWindowController::onStartStopSearch( flx::Flx_ReturnButton &btn, 
                                           SearchCriteriaPtr &pSearchCrit ) 
 {
-    fl_cursor( FL_CURSOR_WAIT );
-    btn.deactivate();
-    Fl::wait( 0.5 );
+  
     _pHitList->removeRows();
+    
+    if( !strcmp( btn.label(), "Suche starten" ) ) {
+        //Suche starten
+        fl_cursor( FL_CURSOR_WAIT );
+        btn.label( "Suche abbrechen" );
+        Fl::wait( 0.5 );
+        startSearch( pSearchCrit );
+    } else {
+        //Suche abbrechen
+    }
+    
+    fl_cursor( FL_CURSOR_DEFAULT );
+    btn.label( "Suche starten" );
+}
+
+void MainWindowController::startSearch( SearchCriteriaPtr &pSearchCrit ) {
     if( pSearchCrit->searchPath.isEmpty() || pSearchCrit->filePattern.isEmpty() ) {
         flx::Flx_Message::failed( "Weder Suchpfad noch FilePattern dürfen leer sein" );
     } else {
@@ -60,9 +74,14 @@ void MainWindowController::onStartSearch( flx::Flx_ReturnButton &btn,
         ff.signalTerminated.connect<MainWindowController, &MainWindowController::onSearchTerminated>( this );
         ff.start();
     }
-    fl_cursor( FL_CURSOR_DEFAULT );
-    btn.activate();
 }
+
+
+//void MainWindowController::onCancelSearch( flx::Flx_Button &btn, 
+//                                          SearchCriteriaPtr &pSearchCrit ) 
+//{
+//    
+//}
 
 void MainWindowController::onMatch( FileFinder &ff, const EntryPtr &pEntryPtr ) {
     _pHitList->addEntry( pEntryPtr->directory.c_str(), 

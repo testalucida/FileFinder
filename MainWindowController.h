@@ -19,17 +19,21 @@ struct OpenParm;
 
 namespace flx {
     class Flx_ReturnButton;
+    class Flx_Button;
 }
 
 class MainWindowController {
 public:
     MainWindowController( MainWindow &win );
     ~MainWindowController();
-    void onStartSearch( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
+    void onStartStopSearch( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
+//    void onCancelSearch( flx::Flx_Button &, SearchCriteriaPtr & );
     void onMatch( FileFinder &, const EntryPtr & );
     void onSearchTerminated( FileFinder &, const SearchStat & );
 //    void onOpenFile( MainWindow &, OpenParm & );
 //    void onOpenDir( MainWindow &, OpenParm & );
+    void startSearch( SearchCriteriaPtr &pSearchCrit );
+    
 private:
     MainWindow &_win;
 //    FileFinderService &_ffService;

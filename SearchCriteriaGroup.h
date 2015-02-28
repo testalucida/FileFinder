@@ -15,11 +15,12 @@
 
 using namespace flx;
 
-class SearchCriteria;
+//class SearchCriteria;
 
 class SearchCriteriaGroup : public Flx_Group  {
 public:
-    my::Signal < Flx_ReturnButton, SearchCriteriaPtr > signalStart;
+    my::Signal < Flx_ReturnButton, SearchCriteriaPtr > signalStartStop;
+//    my::Signal < Flx_Button, SearchCriteriaPtr > signalCancel;
 public:
     SearchCriteriaGroup( int x, int y, int w, int h );
     ~SearchCriteriaGroup();
@@ -27,6 +28,7 @@ public:
     void setModel( SearchCriteriaPtr pSearchCrit );
 private:
     void onStart( Flx_ReturnButton &, ActionParm & );
+//    void onCancel( Flx_Button &, ActionParm & );
     void modelToFields();
     void fieldsToModel();
 private:
@@ -38,6 +40,7 @@ private:
     Flx_CheckButton *_pCheckWholeWords;
     Flx_CheckButton *_pCheckMatchCase;
     Flx_ReturnButton *_pBtnStart;
+    Flx_Button *_pBtnCancel;
     Flx_Group *_dummyGrp;
     SearchCriteriaPtr _pSearchCrit;
 };

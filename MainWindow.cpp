@@ -1,12 +1,14 @@
 #include "MainWindow.h"
 #include "OpenParm.h"
-#include "searchcriteriagroup.h"
+#include "SearchCriteriaGroup.h"
 
 #include <flx/Flx_Table.h>
 #include <flx/Flx_Output.h>
 #include <flx/Flx_Group.h>
 #include <flx/flx_colors.h>
 #include <flx/flx_boxtypes.h>
+#include <flx/Flx_Button.h>
+#include <flx/Flx_ReturnButton.h>
 
 using namespace flx;
 
@@ -19,7 +21,8 @@ MainWindow::MainWindow()
 : Flx_Window( 500, 100, 575, 440, "Dateien und Inhalte finden" )
 {
     _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187 );
-    _pSearchCritGrp->signalStart.connect<MainWindow, &MainWindow::onStart>( this );
+    _pSearchCritGrp->signalStartStop.connect<MainWindow, &MainWindow::onStartStop>( this );
+//    _pSearchCritGrp->signalCancel.connect<MainWindow, &MainWindow::onCancel>( this );
 
     _pLowerGrp = new Flx_Group(0, 187, 575, 256);
         {
@@ -71,9 +74,13 @@ void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) 
     }
 }
 
-void MainWindow::onStart( Flx_ReturnButton &btn, SearchCriteriaPtr & pSearchCrit ) {
-    signalStart.send( btn, pSearchCrit );
+void MainWindow::onStartStop( Flx_ReturnButton &btn, SearchCriteriaPtr & pSearchCrit ) {
+    signalStartStop.send( btn, pSearchCrit );
 }
+
+//void MainWindow::onCancel( Flx_Button &btn, SearchCriteriaPtr & pSearchCrit ) {
+//    signalCancel.send( btn, pSearchCrit );
+//}
 
 void MainWindow::setStatus( const char *pMsg ) {
     _pStatusMsg->value( pMsg );

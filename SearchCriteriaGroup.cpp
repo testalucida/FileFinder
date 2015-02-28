@@ -1,4 +1,4 @@
-#include "searchcriteriagroup.h"
+#include "SearchCriteriaGroup.h"
 #include "SearchCriteria.h"
 
 #include <cstdio>
@@ -45,8 +45,13 @@ SearchCriteriaGroup( int x, int y, int w, int h )
     _pCheckMatchCase->down_box(FL_DOWN_BOX);
     _pCheckMatchCase->labelsize(12);
 
-    _pBtnStart = new Flx_ReturnButton(139, 154, 401, 23, "Suche starten");
+   _pBtnStart = new Flx_ReturnButton(139, 154, 401, 23, "Suche starten");
+//    _pBtnStart = new Flx_ReturnButton(139, 154, 200, 23, "Suche starten");
+//    _pBtnCancel = new Flx_Button( _pBtnStart->x() + _pBtnStart->w() + 2, 
+//                                  _pBtnStart->y(), 200, 23, "Suche abbrechen");
+//    _pBtnCancel->deactivate();
     _pBtnStart->signalSelected.connect<SearchCriteriaGroup, &SearchCriteriaGroup::onStart>( this );
+//    _pBtnCancel->signalSelected.connect<SearchCriteriaGroup, &SearchCriteriaGroup::onCancel>( this );
  
     end();
 }
@@ -72,8 +77,12 @@ void SearchCriteriaGroup::onOpenFileDlg( Flx_Button &, ActionParm & ) {
 
 void SearchCriteriaGroup::onStart( Flx_ReturnButton &btn, ActionParm & ) {
     fieldsToModel();
-    signalStart.send( btn, _pSearchCrit );
+    signalStartStop.send( btn, _pSearchCrit );
 }
+
+//void SearchCriteriaGroup::onCancel( Flx_Button &btn, ActionParm & ) {
+//    signalCancel.send( btn, _pSearchCrit );
+//}
 
 void SearchCriteriaGroup::setModel( SearchCriteriaPtr pSearchCrit ) {
     _pSearchCrit = pSearchCrit;
