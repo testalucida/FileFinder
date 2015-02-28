@@ -21,9 +21,16 @@
 
 using namespace my;
 
+
+static void *startSearch( void *parm ) {
+    ((MainWindowController*)parm)->startSearch();
+    return NULL;
+}
+
 MainWindowController::MainWindowController( MainWindow &win ) 
 : _win( win )
-//, _ffService( FileFinderService::instance() )
+, _isThreadRunning( false )
+, _isThreadCancelled( false )
 {
 //    SearchCriteriaPtr pSearchCrit = _ffService.getSearchCriteria();
 //    HitListPtr pHitList = _ffService.getHitList();
@@ -48,52 +55,74 @@ MainWindowController::MainWindowController( MainWindow &win )
 void MainWindowController::onStartStopSearch( flx::Flx_ReturnButton &btn, 
                                           SearchCriteriaPtr &pSearchCrit ) 
 {
-  
     _pHitList->removeRows();
     
-    if( !strcmp( btn.label(), "Suche starten" ) ) {
-        //Suche starten
+    if( !_isThreadRunning ) {
+        //kein Thread läuft, Suche starten
+        _win.setStatus( "" );
         fl_cursor( FL_CURSOR_WAIT );
-        btn.label( "Suche abbrechen" );
+        _win.setStartStopLabel( STARTSTOPLABEL_STOP, false );
         Fl::wait( 0.5 );
-        startSearch( pSearchCrit );
+       
+        //startSearch( pSearchCrit );
+        _pSearchCrit = pSearchCrit;
+        fl_create_thread( _searchThread, ::startSearch, this );
     } else {
-        //Suche abbrechen
+        //Thread aktiv, versuchen, Suche abzubrechen
+        _isThreadCancelled = true;
+        _win.setStartStopLabel( STARTSTOPLABEL_WAIT, true );
+        Fl::wait( 0.5 );
     }
-    
-    fl_cursor( FL_CURSOR_DEFAULT );
-    btn.label( "Suche starten" );
 }
 
-void MainWindowController::startSearch( SearchCriteriaPtr &pSearchCrit ) {
-    if( pSearchCrit->searchPath.isEmpty() || pSearchCrit->filePattern.isEmpty() ) {
+void MainWindowController::startSearch( /*SearchCriteriaPtr &pSearchCrit*/ ) {
+    if( _pSearchCrit->searchPath.isEmpty() || _pSearchCrit->filePattern.isEmpty() ) {
         flx::Flx_Message::failed( "Weder Suchpfad noch FilePattern dürfen leer sein" );
     } else {
-        FileFinder ff( *pSearchCrit );
+        FileFinder ff( *_pSearchCrit );
         ff.signalMatch.connect<MainWindowController, &MainWindowController::onMatch>( this );
         ff.signalTerminated.connect<MainWindowController, &MainWindowController::onSearchTerminated>( this );
-        ff.start();
+        ff.signalCanProceed.connect<MainWindowController, &MainWindowController::onCanProceed>( this );
+        _isThreadRunning = true;
+        ff.start();        
     }
 }
 
-
-//void MainWindowController::onCancelSearch( flx::Flx_Button &btn, 
-//                                          SearchCriteriaPtr &pSearchCrit ) 
-//{
-//    
-//}
+void MainWindowController::onCanProceed( FileFinder &, CanProceedParm &parm ) {
+    parm.canProceed = !_isThreadCancelled;
+}
 
 void MainWindowController::onMatch( FileFinder &ff, const EntryPtr &pEntryPtr ) {
+    
+    Fl::lock();
+    
     _pHitList->addEntry( pEntryPtr->directory.c_str(), 
                          pEntryPtr->name.c_str(), 
                          pEntryPtr->lastWrite );
+    
+    Fl::unlock();
+    Fl::awake( (void*)NULL );
 }
 
 void MainWindowController::onSearchTerminated( FileFinder &ff, const SearchStat &searchStat ) {
     CharBuffer msg;
-    msg.add( "Suche beendet. " ).addInt( searchStat.cntVisited ).add( " Dateien betrachtet, " )
-       .addInt( searchStat.cntMatch ).add( " Treffer." );
+    if( _isThreadCancelled ) {
+        msg.add( "Suche abgebrochen." );
+    } else {
+        msg.add( "Suche beendet. " ).addInt( searchStat.cntVisited ).add( " Dateien betrachtet, " )
+           .addInt( searchStat.cntMatch ).add( " Treffer." );
+    }
+    
+    Fl::lock();
     _win.setStatus( msg.get() );
+    fl_cursor( FL_CURSOR_DEFAULT );
+    _win.setStartStopLabel( STARTSTOPLABEL_START, false );
+    Fl::unlock();
+    Fl::awake( (void*)NULL );
+    
+    _isThreadRunning = false;
+    _isThreadCancelled = false;
+   
 }
 
 //void MainWindowController::onOpenFile( MainWindow &, OpenParm &parm ) {

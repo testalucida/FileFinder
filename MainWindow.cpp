@@ -50,6 +50,9 @@ MainWindow::MainWindow()
     resizable(_pLowerGrp);
 }
 
+void MainWindow::setStartStopLabel( StartStopLabel lbl, bool disableButton ) { 
+    _pSearchCritGrp->setStartStopLabel( lbl, disableButton ); 
+}
 
 void MainWindow::setModel( SearchCriteriaPtr pSearchCrit, HitListPtr pHitList ) {
     _pSearchCritGrp->setModel( pSearchCrit );

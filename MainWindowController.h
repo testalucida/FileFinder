@@ -12,6 +12,8 @@
 #include "HitList.h"
 #include "FileFinder.h"
 #include "ApplicationStarter.h"
+#include "config.h"
+#include "test/threads.h"
 
 class MainWindow;
 class FileFinderService;
@@ -27,18 +29,17 @@ public:
     MainWindowController( MainWindow &win );
     ~MainWindowController();
     void onStartStopSearch( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
-//    void onCancelSearch( flx::Flx_Button &, SearchCriteriaPtr & );
     void onMatch( FileFinder &, const EntryPtr & );
     void onSearchTerminated( FileFinder &, const SearchStat & );
-//    void onOpenFile( MainWindow &, OpenParm & );
-//    void onOpenDir( MainWindow &, OpenParm & );
-    void startSearch( SearchCriteriaPtr &pSearchCrit );
-    
+    void startSearch( /*SearchCriteriaPtr &pSearchCrit */ );
+    void onCanProceed( FileFinder &, CanProceedParm & );
 private:
     MainWindow &_win;
-//    FileFinderService &_ffService;
+    bool _isThreadRunning, _isThreadCancelled;
     HitListPtr _pHitList;
     ApplicationStarter _appStarter;
+    SearchCriteriaPtr _pSearchCrit;
+    Fl_Thread _searchThread;
 };
 
 #endif	/* MAINWINDOWVIEWMODEL_H */

@@ -14,6 +14,8 @@
 
 using namespace flx;
 
+const char *startStopLabels[] = {"Suche starten", "Suche abbrechen", "Warten..."};
+
 SearchCriteriaGroup::
 SearchCriteriaGroup( int x, int y, int w, int h )
 	: Flx_Group(x, y, w, h )
@@ -45,20 +47,21 @@ SearchCriteriaGroup( int x, int y, int w, int h )
     _pCheckMatchCase->down_box(FL_DOWN_BOX);
     _pCheckMatchCase->labelsize(12);
 
-   _pBtnStart = new Flx_ReturnButton(139, 154, 401, 23, "Suche starten");
-//    _pBtnStart = new Flx_ReturnButton(139, 154, 200, 23, "Suche starten");
-//    _pBtnCancel = new Flx_Button( _pBtnStart->x() + _pBtnStart->w() + 2, 
-//                                  _pBtnStart->y(), 200, 23, "Suche abbrechen");
-//    _pBtnCancel->deactivate();
+    _pBtnStart = new Flx_ReturnButton(139, 154, 401, 23, startStopLabels[STARTSTOPLABEL_START]);
     _pBtnStart->signalSelected.connect<SearchCriteriaGroup, &SearchCriteriaGroup::onStart>( this );
-//    _pBtnCancel->signalSelected.connect<SearchCriteriaGroup, &SearchCriteriaGroup::onCancel>( this );
  
     end();
 }
 
-const char* START_SEARCH = "Suche starten";
-const char* STOP_SEARCH = "Suche abbrechen";
-const char* WAIT = "Warten...";
+void SearchCriteriaGroup::setStartStopLabel( StartStopLabel lbl, bool disableButton ) {
+    _pBtnStart->label( startStopLabels[lbl] );
+    if( disableButton ) {
+        _pBtnStart->deactivate();
+    } else {
+        _pBtnStart->activate();
+    }
+    _pBtnStart->redraw_label();
+}
 
 void SearchCriteriaGroup::onOpenFileDlg( Flx_Button &, ActionParm & ) {
 	Fl_Native_File_Chooser *pChooser =

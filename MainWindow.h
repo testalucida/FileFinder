@@ -7,6 +7,7 @@
 
 #include "SearchCriteria.h"
 #include "HitList.h"
+#include "startstoplabels.h"
 
 #include <flx/Flx_Window.h>
 
@@ -40,6 +41,7 @@ public:
     void onStartStop( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
 //    void onCancel( flx::Flx_Button &, SearchCriteriaPtr & );
     void setStatus( const char *pMsg );
+    void setStartStopLabel( StartStopLabel lbl, bool disableButton );
 private:
     SearchCriteriaGroup *_pSearchCritGrp;
     flx::Flx_Group *_pLowerGrp;

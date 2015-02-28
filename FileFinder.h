@@ -33,11 +33,16 @@ struct SearchStat {
     int cntMatch;
 };
 
+struct CanProceedParm {
+    bool canProceed;
+};
+
 class FileFinder {
 public:
     //my::Signal < FileFinder, std::string > signalProgress;
     my::Signal < FileFinder, const EntryPtr > signalMatch;
     my::Signal < FileFinder, const SearchStat > signalTerminated;
+    my::Signal < FileFinder, CanProceedParm > signalCanProceed;
 public:
 	/** Default ctor uses default SearchCriteria */
 	FileFinder( SearchCriteria &searchCrit );

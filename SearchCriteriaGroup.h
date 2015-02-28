@@ -2,6 +2,7 @@
 #define SEARCHCRITERIAGROUP_H
 
 #include "SearchCriteria.h"
+#include "startstoplabels.h"
 
 #include <my/Signal.hpp>
 
@@ -15,8 +16,6 @@
 
 using namespace flx;
 
-//class SearchCriteria;
-
 class SearchCriteriaGroup : public Flx_Group  {
 public:
     my::Signal < Flx_ReturnButton, SearchCriteriaPtr > signalStartStop;
@@ -26,9 +25,9 @@ public:
     ~SearchCriteriaGroup();
     void onOpenFileDlg( Flx_Button &, ActionParm & );
     void setModel( SearchCriteriaPtr pSearchCrit );
+    void setStartStopLabel( StartStopLabel lbl, bool disableButton );
 private:
     void onStart( Flx_ReturnButton &, ActionParm & );
-//    void onCancel( Flx_Button &, ActionParm & );
     void modelToFields();
     void fieldsToModel();
 private:

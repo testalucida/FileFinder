@@ -90,34 +90,40 @@ void FileFinder::stop() {
     }
 }
 
-void FileFinder::onHit(DirectoryIterator &, EntryFoundEvent &entryFound) {
-    EntryPtr pEntry = entryFound.entryPtr;
-    const char *searchContent = _searchCrit.searchContent.get();
-    bool hasSearchContent = ( searchContent && strlen( searchContent ) > 0 );
-    if( pEntry->isDirectory && hasSearchContent ) {
-        //it's a directory; can't have content, so it's not
-        //interesting.
-        return;
-    }
-    _cntVisited++;
-    //	if( _onProgressCallback ) {
-    //		reportProgress( pEntry->directory.c_str(), pEntry->name.c_str() );
-    //	}
+void FileFinder::onHit(DirectoryIterator &dirItr, EntryFoundEvent &entryFound) {
+    CanProceedParm parm;
+    signalCanProceed.send( *this, parm );
+    if( parm.canProceed ) {
+        EntryPtr pEntry = entryFound.entryPtr;
+        const char *searchContent = _searchCrit.searchContent.get();
+        bool hasSearchContent = ( searchContent && strlen( searchContent ) > 0 );
+        if( pEntry->isDirectory && hasSearchContent ) {
+            //it's a directory; can't have content, so it's not
+            //interesting.
+            return;
+        }
+        _cntVisited++;
+        //	if( _onProgressCallback ) {
+        //		reportProgress( pEntry->directory.c_str(), pEntry->name.c_str() );
+        //	}
 
-    if( ( pEntry->isDirectory && matchesPattern( pEntry->directory ) ) ||
-            ( /*!pEntry->isDirectory &&*/ matchesPattern( pEntry->name ) ) ) {
-        if( hasSearchContent ) {
-            if( !( pEntry->isNormalFile && contentMatchesPattern( pEntry ) ) ) {
-                return;
+        if( ( pEntry->isDirectory && matchesPattern( pEntry->directory ) ) ||
+                ( /*!pEntry->isDirectory &&*/ matchesPattern( pEntry->name ) ) ) {
+            if( hasSearchContent ) {
+                if( !( pEntry->isNormalFile && contentMatchesPattern( pEntry ) ) ) {
+                    return;
+                }
+            }
+            _cntMatch++;
+            //if( _sortEntries ) {
+            if( _searchCrit.sortEntries ) {
+                rememberEntry( pEntry );
+            } else {
+                reportEntry( pEntry );
             }
         }
-        _cntMatch++;
-        //if( _sortEntries ) {
-        if( _searchCrit.sortEntries ) {
-            rememberEntry( pEntry );
-        } else {
-            reportEntry( pEntry );
-        }
+    } else {
+        dirItr.stop();
     }
 }
 
