@@ -21,11 +21,6 @@
 #include <regex.h>
 #endif
 
-
-//typedef std::function<void( const char* msg )> ONPROGRESS_CALLBACK;
-//typedef std::function<void( const EntryPtr entry )> ONMATCH_CALLBACK;
-//typedef std::function<void( const char *pDir )> ONDIRECTORYFOUND_CALLBACK;
-
 typedef std::shared_ptr<my::Entry> EntryPtr;
 
 struct SearchStat {
@@ -39,36 +34,18 @@ struct CanProceedParm {
 
 class FileFinder {
 public:
-    //my::Signal < FileFinder, std::string > signalProgress;
     my::Signal < FileFinder, const EntryPtr > signalMatch;
     my::Signal < FileFinder, const SearchStat > signalTerminated;
     my::Signal < FileFinder, CanProceedParm > signalCanProceed;
 public:
 	/** Default ctor uses default SearchCriteria */
 	FileFinder( SearchCriteria &searchCrit );
-
-	/** sets the SearchCriteria
-		containing all conditions for the next search */
-	//void setSearchCriteria( SearchCriteria &model );
 	/** start search */
 	void start();
-	/** set a callback function called whenever the next
-	    entry is examined */
-    //void setProgressCallback( ONPROGRESS_CALLBACK cb );
     /** stops searching */
     void stop();
 	/** Dtor */
 	virtual ~FileFinder();
-	///** if entries are to be reported in alphabetically order */
-	//void sortEntries( bool sortEntries );
-	/** registers the one and only match callback */
-//	void setMatchCallback( ONMATCH_CALLBACK cb );
-//	/** sets a directory callback.
-//	 *  You will need this when implementing multithreaded file search.
-//	 *  Switch includeSubDirs to false and create a new FileFinder
-//	 *  in a new thread on every found directory entry.  */
-//	void setDirectoryCallback( ONDIRECTORYFOUND_CALLBACK cb );
-
 private:
 	void prepareSearch();
 	/** sets a non-regex searchpattern */
@@ -81,15 +58,10 @@ private:
 	/** constructs a complete path and filename out of
 	 * given separate path- and file name */
 	const char* makeFullPath( const char *dir, const char *filename, char *fullPath );
-	/** handles each entry met: reports immediately or remembers it,
-	 * according to the sort option. */
-	//void handleEntry( const char *dir, const my::EntryPtr pEntry );
 	/** checks if the given file or directory name satisfies the defined pattern */
 	bool matchesPattern( const std::string &text );
 	/** checks if a file's content matches a given pattern */
 	bool contentMatchesPattern( const my::EntryPtr pEntry );
-	/** creates a new Entry instance (for reporting purposes) */
-	//const Entry &createEntry( const char *dir, const Entry *pEntry );
 	/** call listeners on each found entry */
 	void reportEntry( const my::EntryPtr pEntry );
 	/** if entries are to be reported in alphabetically order
@@ -119,13 +91,9 @@ private:
 	SearchCriteria &_searchCrit;
 
     std::vector<EntryPtr> _entries;
-    //int _callCnt;
     int _cntVisited;
     int _cntMatch;
-    //std::vector<const char*> _dirList;
-
     char _progressMsg[512];
-    //bool _stop;
 #ifdef WIN32
 	std::regex _filePattern;
 	std::regex *_pContentPattern;

@@ -31,7 +31,7 @@ public:
     void onStartStopSearch( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
     void onMatch( FileFinder &, const EntryPtr & );
     void onSearchTerminated( FileFinder &, const SearchStat & );
-    void startSearch( /*SearchCriteriaPtr &pSearchCrit */ );
+    void startSearch();
     void onCanProceed( FileFinder &, CanProceedParm & );
 private:
     MainWindow &_win;

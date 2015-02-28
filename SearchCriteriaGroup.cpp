@@ -34,7 +34,6 @@ SearchCriteriaGroup( int x, int y, int w, int h )
  
 
     _pInpSearchContent = new Flx_Input(139, 62, 401, 23, "Volltextsuche nach: ");
-  
     
     _pCheckIncludeSubDirs = new Flx_CheckButton(137, 88, 25, 25, " Unterverzeichnisse durchsuchen");
     _pCheckIncludeSubDirs->down_box(FL_DOWN_BOX);
@@ -82,10 +81,6 @@ void SearchCriteriaGroup::onStart( Flx_ReturnButton &btn, ActionParm & ) {
     fieldsToModel();
     signalStartStop.send( btn, _pSearchCrit );
 }
-
-//void SearchCriteriaGroup::onCancel( Flx_Button &btn, ActionParm & ) {
-//    signalCancel.send( btn, _pSearchCrit );
-//}
 
 void SearchCriteriaGroup::setModel( SearchCriteriaPtr pSearchCrit ) {
     _pSearchCrit = pSearchCrit;

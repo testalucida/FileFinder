@@ -3,8 +3,6 @@
 
 #include "OpenParm.h"
 
-//#include <my/Signal.hpp>
-
 #include "SearchCriteria.h"
 #include "HitList.h"
 #include "startstoplabels.h"
@@ -29,7 +27,6 @@ class SearchCriteriaGroup;
 class MainWindow : public flx::Flx_Window {
 public:
     my::Signal < flx::Flx_ReturnButton, SearchCriteriaPtr > signalStartStop;
-//    my::Signal < flx::Flx_Button, SearchCriteriaPtr > signalCancel;
     my::Signal<MainWindow, OpenParm> signalOpen;
     my::Signal<MainWindow, OpenParm> signalOpenDir;
     
@@ -39,7 +36,6 @@ public:
     void setModel( SearchCriteriaPtr pSearchCrit, HitListPtr pHitList );
     void onCellMenuItem( flx::Flx_ContextMenu &, flx::MenuItemAction & );
     void onStartStop( flx::Flx_ReturnButton &, SearchCriteriaPtr & );
-//    void onCancel( flx::Flx_Button &, SearchCriteriaPtr & );
     void setStatus( const char *pMsg );
     void setStartStopLabel( StartStopLabel lbl, bool disableButton );
 private:

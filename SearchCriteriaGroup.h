@@ -19,7 +19,6 @@ using namespace flx;
 class SearchCriteriaGroup : public Flx_Group  {
 public:
     my::Signal < Flx_ReturnButton, SearchCriteriaPtr > signalStartStop;
-//    my::Signal < Flx_Button, SearchCriteriaPtr > signalCancel;
 public:
     SearchCriteriaGroup( int x, int y, int w, int h );
     ~SearchCriteriaGroup();

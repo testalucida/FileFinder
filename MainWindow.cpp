@@ -22,7 +22,6 @@ MainWindow::MainWindow()
 {
     _pSearchCritGrp = new SearchCriteriaGroup(0, 0, 575, 187 );
     _pSearchCritGrp->signalStartStop.connect<MainWindow, &MainWindow::onStartStop>( this );
-//    _pSearchCritGrp->signalCancel.connect<MainWindow, &MainWindow::onCancel>( this );
 
     _pLowerGrp = new Flx_Group(0, 187, 575, 256);
         {
@@ -80,10 +79,6 @@ void MainWindow::onCellMenuItem( Flx_ContextMenu &, flx::MenuItemAction & mia ) 
 void MainWindow::onStartStop( Flx_ReturnButton &btn, SearchCriteriaPtr & pSearchCrit ) {
     signalStartStop.send( btn, pSearchCrit );
 }
-
-//void MainWindow::onCancel( Flx_Button &btn, SearchCriteriaPtr & pSearchCrit ) {
-//    signalCancel.send( btn, pSearchCrit );
-//}
 
 void MainWindow::setStatus( const char *pMsg ) {
     _pStatusMsg->value( pMsg );

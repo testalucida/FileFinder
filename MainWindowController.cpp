@@ -7,7 +7,6 @@
 
 #include "MainWindowController.h"
 #include "MainWindow.h"
-#include "FileFinderService.h"
 #include "FileFinder.h"
 #include "ApplicationStarter.h"
 
@@ -32,9 +31,6 @@ MainWindowController::MainWindowController( MainWindow &win )
 , _isThreadRunning( false )
 , _isThreadCancelled( false )
 {
-//    SearchCriteriaPtr pSearchCrit = _ffService.getSearchCriteria();
-//    HitListPtr pHitList = _ffService.getHitList();
-    
     SearchCriteriaPtr pSearchCrit( new SearchCriteria() );
     //set some defaults
     StringPtr curDir = FileHelper::instance().getCurrentDirectory();
@@ -67,8 +63,6 @@ void MainWindowController::onStartStopSearch( flx::Flx_ReturnButton &btn,
         fl_cursor( FL_CURSOR_WAIT );
         _win.setStartStopLabel( STARTSTOPLABEL_STOP, false );
         Fl::wait( 0.5 );
-       
-        //startSearch( pSearchCrit );
         _pSearchCrit = pSearchCrit;
         fl_create_thread( _searchThread, ::startSearch, this );
     } else {
@@ -79,7 +73,7 @@ void MainWindowController::onStartStopSearch( flx::Flx_ReturnButton &btn,
     }
 }
 
-void MainWindowController::startSearch( /*SearchCriteriaPtr &pSearchCrit*/ ) {
+void MainWindowController::startSearch() {
     if( _pSearchCrit->searchPath.isEmpty() || _pSearchCrit->filePattern.isEmpty() ) {
         flx::Flx_Message::failed( "Weder Suchpfad noch FilePattern dürfen leer sein" );
     } else {
@@ -128,14 +122,6 @@ void MainWindowController::onSearchTerminated( FileFinder &ff, const SearchStat 
     _isThreadCancelled = false;
    
 }
-
-//void MainWindowController::onOpenFile( MainWindow &, OpenParm &parm ) {
-//    ApplicationStarter starter;
-//}
-//
-//void MainWindowController::onOpenDir( MainWindow &, OpenParm &parm ) {
-//    
-//}
 
 MainWindowController::~MainWindowController( ) {
 }
