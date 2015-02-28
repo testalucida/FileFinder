@@ -10,6 +10,7 @@
 
 #include <my/convert.h>
 #include <my/StringHelper.h>
+#include <my/CharBuffer.h>
 
 #include <sys/types.h>
 #include <string.h>
@@ -21,6 +22,7 @@
 #define SLASH "\\"
 #else
 #define SLASH "/"
+#include <sys/stat.h>
 #endif
 
 using namespace std;
@@ -105,7 +107,7 @@ void FileFinder::onHit(DirectoryIterator &, EntryFoundEvent &entryFound) {
     if( ( pEntry->isDirectory && matchesPattern( pEntry->directory ) ) ||
             ( /*!pEntry->isDirectory &&*/ matchesPattern( pEntry->name ) ) ) {
         if( hasSearchContent ) {
-            if( !contentMatchesPattern( pEntry ) ) {
+            if( !( pEntry->isNormalFile && contentMatchesPattern( pEntry ) ) ) {
                 return;
             }
         }
@@ -218,7 +220,16 @@ bool FileFinder::contentMatchesPattern(const EntryPtr pEntry) {
     return false;
 }
 
-void FileFinder::reportEntry(const EntryPtr pEntry) {
+void FileFinder::reportEntry( const EntryPtr pEntry ) {
+#ifndef WIN32
+    //when running Linux we don't have a last modified date yet.
+    //Get it now:
+    struct stat attrib;
+    CharBuffer filepath;
+    filepath.add( pEntry->directory.c_str() ).add( "/" ).add( pEntry->name.c_str() );
+    stat( filepath.get(), &attrib );
+    strftime( pEntry->lastWrite, 29, "%Y-%m-%d:%H.%M.%S", localtime(&(attrib.st_ctime)));
+#endif
     signalMatch.send( *this, pEntry );
 }
 
