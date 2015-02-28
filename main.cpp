@@ -8,7 +8,7 @@
 //---------------------------------------------------
 
 int main(int argc, char **argv) {
-    
+    char *pHome = getenv("HOME");
     MainWindow mainWin;
 
     MainWindowController ctrl( mainWin );

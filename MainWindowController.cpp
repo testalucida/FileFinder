@@ -38,7 +38,11 @@ MainWindowController::MainWindowController( MainWindow &win )
     SearchCriteriaPtr pSearchCrit( new SearchCriteria() );
     //set some defaults
     StringPtr curDir = FileHelper::instance().getCurrentDirectory();
+#ifdef _DEBUG
     pSearchCrit->searchPath.add( curDir->c_str() );
+#else 
+    pSearchCrit->searchPath.add( getenv("HOME") );
+#endif
     pSearchCrit->filePattern.add( "*.cpp, *.h" );
     pSearchCrit->includeSubDirs = true;
     pSearchCrit->matchCase = false;
